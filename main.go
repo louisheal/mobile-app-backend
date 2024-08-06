@@ -27,7 +27,7 @@ func main() {
 
 	router.GET("/clubs", server.getClubs)
 
-	router.Run("0.0.0.0:8080")
+	router.Run()
 }
 
 func (server Server) getClubs(c *gin.Context) {
