@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 
 	"mobile-app-backend/database"
 
@@ -14,14 +16,13 @@ type Server struct {
 
 func main() {
 
-	mongoDB := database.NewMongoDB()
+	pass := os.Getenv("dbPass")
+	uri := fmt.Sprintf("mongodb+srv://dbUser:%s@cluster0.iarktte.mongodb.net/?appName=Cluster0", pass)
+
+	mongoDB := database.NewMongoDB(uri)
 	server := Server{mongoDB}
 
 	router := gin.Default()
-
-	// config := cors.DefaultConfig()
-	// config.AllowOrigins = []string{"http://localhost:8081"}
-	// router.Use(cors.New(config))
 
 	router.GET("/clubs", server.getClubs)
 	router.Run()

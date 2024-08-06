@@ -3,8 +3,6 @@ package database
 import (
 	"context"
 	"fmt"
-	"os"
-	"strings"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -29,18 +27,9 @@ func (mongoDB *MongoDB) GetClubs() []Club {
 	return clubs
 }
 
-func NewMongoDB() *MongoDB {
-
-	password := os.Getenv("dbPass")
-
-	// TODO: Should be passed in (like constructor)
-	var uri strings.Builder
-	uri.WriteString("mongodb+srv://dbUser:")
-	uri.WriteString(password)
-	uri.WriteString("@cluster0.iarktte.mongodb.net/?appName=Cluster0")
-
+func NewMongoDB(uri string) *MongoDB {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI(uri.String()).SetServerAPIOptions(serverAPI)
+	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
 
 	client, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {
