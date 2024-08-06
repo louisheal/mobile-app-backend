@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"mobile-app-backend/database"
 
@@ -27,7 +28,11 @@ func main() {
 
 	router.GET("/clubs", server.getClubs)
 
-	router.Run()
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	router.Run(":" + port)
 }
 
 func (server Server) getClubs(c *gin.Context) {
