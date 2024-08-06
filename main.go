@@ -5,7 +5,6 @@ import (
 
 	"mobile-app-backend/database"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,9 +19,9 @@ func main() {
 
 	router := gin.Default()
 
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:8081"}
-	router.Use(cors.New(config))
+	// config := cors.DefaultConfig()
+	// config.AllowOrigins = []string{"http://localhost:8081"}
+	// router.Use(cors.New(config))
 
 	router.GET("/clubs", server.getClubs)
 	router.Run()
