@@ -1,4 +1,4 @@
-package database
+package dao
 
 type Club struct {
 	ID   string `json:"id" bson:"_id"`

@@ -1,5 +1,9 @@
 package database
 
+import (
+	"mobile-app-backend/dao"
+)
+
 type Database interface {
-	GetClubs() ([]Club, error)
+	GetClubs() ([]dao.Club, error)
 }
