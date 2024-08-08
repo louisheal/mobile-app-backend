@@ -1,14 +1,16 @@
 package dao
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type Rating struct {
-	ClubID string `json:"clubId" bson:"clubId"`
-	UserID string `json:"userId" bson:"userId"`
-	Value  int    `json:"value" bson:"value"`
+	ClubID primitive.ObjectID `json:"clubId" bson:"clubId"`
+	UserID primitive.ObjectID `json:"userId" bson:"userId"`
+	Value  int                `json:"value" bson:"value"`
 }
 
 type RatingFilter struct {
-	ClubID string `json:"clubId" bson:"clubId"`
-	UserID string `json:"userId" bson:"userId"`
+	ClubID primitive.ObjectID `json:"clubId" bson:"clubId"`
+	UserID primitive.ObjectID `json:"userId" bson:"userId"`
 }
 
 type RatingUpdate struct {
