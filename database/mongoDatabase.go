@@ -16,6 +16,10 @@ type MongoDB struct {
 	client *mongo.Client
 }
 
+func NewMongoDB(client *mongo.Client) *MongoDB {
+	return &MongoDB{client}
+}
+
 func (mongoDB *MongoDB) GetClubs() ([]dao.Club, error) {
 	collection := mongoDB.client.Database("mobile-app").Collection("clubs")
 
@@ -29,10 +33,19 @@ func (mongoDB *MongoDB) GetClubs() ([]dao.Club, error) {
 	return clubs, nil
 }
 
-func NewMongoDB(client *mongo.Client) *MongoDB {
-	return &MongoDB{client}
+func (mongoDB *MongoDB) PutRating(rating dao.Rating) error {
+	collection := mongoDB.client.Database("mobile-app").Collection("ratings")
+
+	filter := bson.M{"clubId": rating.ClubID, "userId": rating.UserID}
+	update := bson.M{"$set": bson.M{"value": rating.Value}}
+	opts := options.Update().SetUpsert(true)
+
+	_, err := collection.UpdateOne(context.TODO(), filter, update, opts)
+
+	return err
 }
 
+// TODO: Functions feels like it should be in another file
 func ConnectToMongo() *mongo.Client {
 	pass := os.Getenv("dbPass")
 	// TODO: String should be in .env (not raw in code)
