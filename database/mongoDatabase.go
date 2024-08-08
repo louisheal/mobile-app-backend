@@ -36,8 +36,8 @@ func (mongoDB *MongoDB) GetClubs() ([]dao.Club, error) {
 func (mongoDB *MongoDB) PutRating(rating dao.Rating) error {
 	collection := mongoDB.client.Database("mobile-app").Collection("ratings")
 
-	filter := bson.M{"clubId": rating.ClubID, "userId": rating.UserID}
-	update := bson.M{"$set": bson.M{"value": rating.Value}}
+	filter, _ := bson.Marshal(rating.Filter())
+	update, _ := bson.Marshal(rating.Update())
 	opts := options.Update().SetUpsert(true)
 
 	_, err := collection.UpdateOne(context.TODO(), filter, update, opts)
