@@ -6,4 +6,5 @@ import (
 
 type Database interface {
 	GetClubs() ([]dao.Club, error)
+	PutRating(dao.Rating) error
 }

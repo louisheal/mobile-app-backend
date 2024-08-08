@@ -13,5 +13,6 @@ func main() {
 
 	router := gin.Default()
 	router.GET("/clubs", routes.GetClubs)
+	router.PUT("/rating", routes.PutRating)
 	router.Run()
 }
