@@ -12,11 +12,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const set string = "$set"
-const mobileApp string = "mobile-app"
-const clubs string = "clubs"
-const ratings string = "ratings"
-
 type MongoDB struct {
 	client *mongo.Client
 }
@@ -28,36 +23,7 @@ func NewMongoDB(client *mongo.Client) *MongoDB {
 func (mongoDB *MongoDB) GetAllClubs() ([]dao.Club, error) {
 	collection := mongoDB.client.Database(mobileApp).Collection(clubs)
 
-	pipeline := mongo.Pipeline{
-		{{Key: "$lookup", Value: bson.D{
-			{Key: "from", Value: "ratings"},
-			{Key: "localField", Value: "_id"},
-			{Key: "foreignField", Value: "clubId"},
-			{Key: "as", Value: "ratings"},
-		}}},
-		{{Key: "$unwind", Value: bson.D{
-			{Key: "path", Value: "$ratings"},
-			{Key: "preserveNullAndEmptyArrays", Value: true},
-		}}},
-		{{Key: "$group", Value: bson.D{
-			{Key: "_id", Value: "$_id"},
-			{Key: "name", Value: bson.D{
-				{Key: "$first", Value: "$name"},
-			}},
-			{Key: "rating", Value: bson.D{
-				{Key: "$avg", Value: "$ratings.value"},
-			}},
-		}}},
-		{{Key: "$project", Value: bson.D{
-			{Key: "_id", Value: 1},
-			{Key: "name", Value: 1},
-			{Key: "rating", Value: bson.D{
-				{Key: "$ifNull", Value: bson.A{"$rating", 0}},
-			}},
-		}}},
-	}
-
-	cursor, err := collection.Aggregate(context.TODO(), pipeline)
+	cursor, err := collection.Aggregate(context.TODO(), clubsPipeline)
 	if err != nil {
 		return []dao.Club{}, err
 	}
