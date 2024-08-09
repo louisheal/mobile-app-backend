@@ -12,11 +12,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const set string = "$set"
-const mobileApp string = "mobile-app"
-const clubs string = "clubs"
-const ratings string = "ratings"
-
 type MongoDB struct {
 	client *mongo.Client
 }
@@ -25,20 +20,23 @@ func NewMongoDB(client *mongo.Client) *MongoDB {
 	return &MongoDB{client}
 }
 
-func (mongoDB *MongoDB) GetClubs() ([]dao.Club, error) {
+func (mongoDB *MongoDB) GetAllClubs() ([]dao.Club, error) {
 	collection := mongoDB.client.Database(mobileApp).Collection(clubs)
 
-	cursor, err := collection.Find(context.TODO(), bson.D{})
+	cursor, err := collection.Aggregate(context.TODO(), clubsPipeline)
 	if err != nil {
 		return []dao.Club{}, err
 	}
 
 	var clubs []dao.Club
-	cursor.All(context.TODO(), &clubs)
+	if err = cursor.All(context.TODO(), &clubs); err != nil {
+		return []dao.Club{}, err
+	}
+
 	return clubs, nil
 }
 
-func (mongoDB *MongoDB) PutRating(rating dao.Rating) error {
+func (mongoDB *MongoDB) InsertRating(rating dao.Rating) error {
 	collection := mongoDB.client.Database(mobileApp).Collection(ratings)
 
 	filter, _ := bson.Marshal(rating.Filter())
@@ -67,6 +65,7 @@ func ConnectToMongo() *mongo.Client {
 	if err := client.Database("admin").RunCommand(context.TODO(), bson.D{{Key: "ping", Value: 1}}).Err(); err != nil {
 		panic(err)
 	}
+	// TODO: Use logging instead
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
 
 	return client

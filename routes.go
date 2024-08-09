@@ -14,7 +14,7 @@ type Routes struct {
 }
 
 func (routes Routes) GetClubs(c *gin.Context) {
-	clubs, err := routes.database.GetClubs()
+	clubs, err := routes.database.GetAllClubs()
 	if err != nil {
 		panic(err)
 	}
@@ -28,7 +28,7 @@ func (routes Routes) PutRating(c *gin.Context) {
 		panic(err)
 	}
 
-	if err := routes.database.PutRating(newRating); err != nil {
+	if err := routes.database.InsertRating(newRating); err != nil {
 		panic(err)
 	}
 
