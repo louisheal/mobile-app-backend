@@ -8,7 +8,6 @@ import (
 	"mobile-app-backend/dao"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -81,20 +80,6 @@ func (mongoDB *MongoDB) InsertRating(rating dao.Rating) error {
 	_, err := collection.UpdateOne(context.TODO(), filter, update, opts)
 
 	return err
-}
-
-func (mongoDB *MongoDB) GetRatingsFromClubId(clubId primitive.ObjectID) ([]dao.Rating, error) {
-	collection := mongoDB.client.Database(mobileApp).Collection(ratings)
-
-	filter := bson.M{"clubId": clubId}
-	cursor, err := collection.Find(context.TODO(), filter)
-	if err != nil {
-		return []dao.Rating{}, err
-	}
-
-	var ratings []dao.Rating
-	cursor.All(context.TODO(), &ratings)
-	return ratings, nil
 }
 
 // TODO: Function feels like it should be in another file
