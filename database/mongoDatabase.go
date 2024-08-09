@@ -64,7 +64,7 @@ func (mongoDB *MongoDB) GetAllClubs() ([]dao.Club, error) {
 
 	var clubs []dao.Club
 	if err = cursor.All(context.TODO(), &clubs); err != nil {
-		return nil, fmt.Errorf("failed to decode clubs: %v", err)
+		return []dao.Club{}, err
 	}
 
 	return clubs, nil
@@ -99,6 +99,7 @@ func ConnectToMongo() *mongo.Client {
 	if err := client.Database("admin").RunCommand(context.TODO(), bson.D{{Key: "ping", Value: 1}}).Err(); err != nil {
 		panic(err)
 	}
+	// TODO: Use logging instead
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
 
 	return client
