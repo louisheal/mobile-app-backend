@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	mongoDB := database.NewMongoDB()
-	routes := Routes{mongoDB}
+	database := database.NewMongoDB()
+	routes := Routes{database}
 
 	router := gin.Default()
 
