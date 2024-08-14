@@ -23,5 +23,6 @@ const ratings string = "ratings"
 
 const id string = "_id"
 const name string = "name"
+const img string = "img"
 const clubId string = "clubId"
 const rating string = "rating"
