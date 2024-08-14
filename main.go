@@ -20,6 +20,7 @@ func main() {
 
 	router.GET("/clubs", routes.GetClubs)
 	router.POST("/ticket", routes.PostTicket)
+	router.GET("/tickets", routes.GetTickets)
 
 	router.Run()
 }

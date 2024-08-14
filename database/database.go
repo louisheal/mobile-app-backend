@@ -9,4 +9,5 @@ import (
 type Database interface {
 	GetAllClubs() ([]dao.Club, error)
 	CreateTicket(dao.NewTicket) (primitive.ObjectID, error)
+	GetAllTickets() ([]dao.Ticket, error)
 }

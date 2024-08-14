@@ -54,6 +54,22 @@ func (mongoDB *MongoDB) CreateTicket(newTicket dao.NewTicket) (primitive.ObjectI
 	return id, err
 }
 
+func (mongoDB *MongoDB) GetAllTickets() ([]dao.Ticket, error) {
+	collection := mongoDB.client.Database(mobileApp).Collection(tickets)
+
+	cursor, err := collection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		return []dao.Ticket{}, err
+	}
+
+	var tickets []dao.Ticket
+	if err = cursor.All(context.TODO(), &tickets); err != nil {
+		return []dao.Ticket{}, err
+	}
+
+	return tickets, nil
+}
+
 // TODO: Function feels like it should be in another file
 func ConnectToMongo() *mongo.Client {
 	pass := os.Getenv("dbPass")

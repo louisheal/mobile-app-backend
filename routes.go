@@ -35,3 +35,12 @@ func (routes Routes) PostTicket(c *gin.Context) {
 
 	c.JSON(http.StatusOK, id)
 }
+
+func (routes Routes) GetTickets(c *gin.Context) {
+	tickets, err := routes.database.GetAllTickets()
+	if err != nil {
+		panic(err)
+	}
+
+	c.JSON(http.StatusOK, tickets)
+}
