@@ -21,6 +21,9 @@ var clubsPipeline mongo.Pipeline = mongo.Pipeline{
 		{name, bson.D{
 			{first, "$name"},
 		}},
+		{img, bson.D{
+			{first, "$img"},
+		}},
 		{rating, bson.D{
 			{avg, "$ratings.value"},
 		}},
@@ -28,6 +31,7 @@ var clubsPipeline mongo.Pipeline = mongo.Pipeline{
 	{{project, bson.D{
 		{id, 1},
 		{name, 1},
+		{img, 1},
 		{rating, bson.D{
 			{ifNull, bson.A{"$rating", 0}},
 		}},
