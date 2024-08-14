@@ -19,7 +19,7 @@ func main() {
 	router.Use(cors.New(config))
 
 	router.GET("/clubs", routes.GetClubs)
-	router.PUT("/rating", routes.PutRating)
+	router.POST("/ticket", routes.PostTicket)
 
 	router.Run()
 }

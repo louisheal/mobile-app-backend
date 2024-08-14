@@ -19,18 +19,19 @@ func (routes Routes) GetClubs(c *gin.Context) {
 		panic(err)
 	}
 
-	c.IndentedJSON(http.StatusOK, clubs)
+	c.JSON(http.StatusOK, clubs)
 }
 
-func (routes Routes) PutRating(c *gin.Context) {
-	var newRating dao.Rating
-	if err := c.BindJSON(&newRating); err != nil {
+func (routes Routes) PostTicket(c *gin.Context) {
+	var newTicket dao.NewTicket
+	if err := c.BindJSON(&newTicket); err != nil {
 		panic(err)
 	}
 
-	if err := routes.database.InsertRating(newRating); err != nil {
+	id, err := routes.database.CreateTicket(newTicket)
+	if err != nil {
 		panic(err)
 	}
 
-	c.IndentedJSON(http.StatusCreated, newRating)
+	c.JSON(http.StatusOK, id)
 }

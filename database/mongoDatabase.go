@@ -8,9 +8,14 @@ import (
 	"mobile-app-backend/dao"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+const mobileApp string = "mobile-app"
+const clubs string = "clubs"
+const tickets string = "tickets"
 
 type MongoDB struct {
 	client *mongo.Client
@@ -23,7 +28,7 @@ func NewMongoDB(client *mongo.Client) *MongoDB {
 func (mongoDB *MongoDB) GetAllClubs() ([]dao.Club, error) {
 	collection := mongoDB.client.Database(mobileApp).Collection(clubs)
 
-	cursor, err := collection.Aggregate(context.TODO(), clubsPipeline)
+	cursor, err := collection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		return []dao.Club{}, err
 	}
@@ -36,16 +41,17 @@ func (mongoDB *MongoDB) GetAllClubs() ([]dao.Club, error) {
 	return clubs, nil
 }
 
-func (mongoDB *MongoDB) InsertRating(rating dao.Rating) error {
-	collection := mongoDB.client.Database(mobileApp).Collection(ratings)
+func (mongoDB *MongoDB) CreateTicket(newTicket dao.NewTicket) (primitive.ObjectID, error) {
+	collection := mongoDB.client.Database(mobileApp).Collection(tickets)
 
-	filter, _ := bson.Marshal(rating.Filter())
-	update, _ := bson.Marshal(bson.M{set: rating.Update()})
-	opts := options.Update().SetUpsert(true)
+	result, err := collection.InsertOne(context.TODO(), newTicket)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
 
-	_, err := collection.UpdateOne(context.TODO(), filter, update, opts)
+	id := result.InsertedID.(primitive.ObjectID)
 
-	return err
+	return id, err
 }
 
 // TODO: Function feels like it should be in another file
