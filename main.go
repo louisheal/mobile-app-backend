@@ -8,9 +8,8 @@ import (
 )
 
 func main() {
-	client := database.ConnectToMongo()
-	mongoDB := database.NewMongoDB(client)
-	routes := Routes{mongoDB}
+	database := database.NewMongoDB()
+	routes := Routes{database}
 
 	router := gin.Default()
 
@@ -19,7 +18,8 @@ func main() {
 	router.Use(cors.New(config))
 
 	router.GET("/clubs", routes.GetClubs)
-	router.PUT("/rating", routes.PutRating)
+	router.POST("/ticket", routes.PostTicket)
+	router.GET("/tickets", routes.GetTickets)
 
 	router.Run()
 }
