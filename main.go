@@ -8,8 +8,7 @@ import (
 )
 
 func main() {
-	client := database.ConnectToMongo()
-	mongoDB := database.NewMongoDB(client)
+	mongoDB := database.NewMongoDB()
 	routes := Routes{mongoDB}
 
 	router := gin.Default()

@@ -21,10 +21,6 @@ type MongoDB struct {
 	client *mongo.Client
 }
 
-func NewMongoDB(client *mongo.Client) *MongoDB {
-	return &MongoDB{client}
-}
-
 func (mongoDB *MongoDB) GetAllClubs() ([]dao.Club, error) {
 	collection := mongoDB.client.Database(mobileApp).Collection(clubs)
 
@@ -70,8 +66,7 @@ func (mongoDB *MongoDB) GetAllTickets() ([]dao.Ticket, error) {
 	return tickets, nil
 }
 
-// TODO: Function feels like it should be in another file
-func ConnectToMongo() *mongo.Client {
+func NewMongoDB() *MongoDB {
 	pass := os.Getenv("dbPass")
 	// TODO: String should be in .env (not raw in code)
 	uri := fmt.Sprintf("mongodb+srv://dbUser:%s@cluster0.iarktte.mongodb.net/?appName=Cluster0", pass)
@@ -90,5 +85,5 @@ func ConnectToMongo() *mongo.Client {
 	// TODO: Use logging instead
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
 
-	return client
+	return &MongoDB{client}
 }
