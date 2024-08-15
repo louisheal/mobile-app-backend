@@ -7,6 +7,7 @@ import (
 	"mobile-app-backend/database"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Routes struct {
@@ -20,6 +21,15 @@ func (routes Routes) GetClubs(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, clubs)
+}
+
+func (routes Routes) GetTickets(c *gin.Context) {
+	tickets, err := routes.database.GetAllTickets()
+	if err != nil {
+		panic(err)
+	}
+
+	c.JSON(http.StatusOK, tickets)
 }
 
 func (routes Routes) PostTicket(c *gin.Context) {
@@ -36,11 +46,24 @@ func (routes Routes) PostTicket(c *gin.Context) {
 	c.JSON(http.StatusOK, id)
 }
 
-func (routes Routes) GetTickets(c *gin.Context) {
-	tickets, err := routes.database.GetAllTickets()
+func (routes Routes) PutTicket(c *gin.Context) {
+	ticketId, err := primitive.ObjectIDFromHex(c.Query("ticketId"))
 	if err != nil {
-		panic(err)
+		// Not valid object id
+		c.JSON(http.StatusOK, "Invalid QR Code")
+		return
 	}
 
-	c.JSON(http.StatusOK, tickets)
+	validTicket, err := routes.database.UseTicket(ticketId)
+	if err != nil {
+		// Ticket not in database
+		c.JSON(http.StatusOK, "Invalid Ticket")
+		return
+	}
+
+	if validTicket {
+		c.JSON(http.StatusOK, "Valid Ticket")
+	} else {
+		c.JSON(http.StatusOK, "Ticket Already Used")
+	}
 }

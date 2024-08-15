@@ -8,6 +8,7 @@ import (
 
 type Database interface {
 	GetAllClubs() ([]dao.Club, error)
-	CreateTicket(dao.NewTicket) (primitive.ObjectID, error)
 	GetAllTickets() ([]dao.Ticket, error)
+	CreateTicket(dao.NewTicket) (primitive.ObjectID, error)
+	UseTicket(primitive.ObjectID) (bool, error)
 }
