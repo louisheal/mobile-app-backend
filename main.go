@@ -22,7 +22,7 @@ func main() {
 
 	router.POST("/ticket", routes.PostTicket)
 
-	router.PUT("/ticket")
+	router.PUT("/ticket", routes.PutTicket)
 
 	router.Run()
 }
