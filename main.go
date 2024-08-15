@@ -18,8 +18,11 @@ func main() {
 	router.Use(cors.New(config))
 
 	router.GET("/clubs", routes.GetClubs)
-	router.POST("/ticket", routes.PostTicket)
 	router.GET("/tickets", routes.GetTickets)
+
+	router.POST("/ticket", routes.PostTicket)
+
+	router.PUT("/ticket")
 
 	router.Run()
 }

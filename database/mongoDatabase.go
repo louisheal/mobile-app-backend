@@ -37,19 +37,6 @@ func (mongoDB *MongoDB) GetAllClubs() ([]dao.Club, error) {
 	return clubs, nil
 }
 
-func (mongoDB *MongoDB) CreateTicket(newTicket dao.NewTicket) (primitive.ObjectID, error) {
-	collection := mongoDB.client.Database(mobileApp).Collection(tickets)
-
-	result, err := collection.InsertOne(context.TODO(), newTicket)
-	if err != nil {
-		return primitive.ObjectID{}, err
-	}
-
-	id := result.InsertedID.(primitive.ObjectID)
-
-	return id, err
-}
-
 func (mongoDB *MongoDB) GetAllTickets() ([]dao.Ticket, error) {
 	collection := mongoDB.client.Database(mobileApp).Collection(tickets)
 
@@ -64,6 +51,43 @@ func (mongoDB *MongoDB) GetAllTickets() ([]dao.Ticket, error) {
 	}
 
 	return tickets, nil
+}
+
+func (mongoDB *MongoDB) CreateTicket(newTicket dao.NewTicket) (primitive.ObjectID, error) {
+	collection := mongoDB.client.Database(mobileApp).Collection(tickets)
+
+	result, err := collection.InsertOne(context.TODO(), newTicket)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+
+	id := result.InsertedID.(primitive.ObjectID)
+
+	return id, err
+}
+
+func (mongoDB *MongoDB) UseTicket(ticketId primitive.ObjectID) (bool, error) {
+	collection := mongoDB.client.Database(mobileApp).Collection(tickets)
+
+	filter := bson.M{"_id": ticketId}
+
+	var ticket dao.Ticket
+	err := collection.FindOne(context.TODO(), filter).Decode(&ticket)
+	if err != nil {
+		return false, err
+	}
+	if ticket.Used {
+		return false, nil
+	}
+
+	update := bson.M{"$set": bson.M{"used": true}}
+	opts := options.Update().SetUpsert(true)
+
+	if _, err = collection.UpdateOne(context.TODO(), filter, update, opts); err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 func NewMongoDB() *MongoDB {
