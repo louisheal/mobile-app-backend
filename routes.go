@@ -47,15 +47,23 @@ func (routes Routes) PostTicket(c *gin.Context) {
 }
 
 func (routes Routes) PutTicket(c *gin.Context) {
-	var ticketId primitive.ObjectID
-	if err := c.BindJSON(&ticketId); err != nil {
-		panic(err)
-	}
-
-	result, err := routes.database.UseTicket(ticketId)
+	ticketId, err := primitive.ObjectIDFromHex(c.Query("ticketId"))
 	if err != nil {
-		panic(err)
+		// Not valid object id
+		c.JSON(http.StatusOK, "Invalid QR Code")
+		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	validTicket, err := routes.database.UseTicket(ticketId)
+	if err != nil {
+		// Ticket not in database
+		c.JSON(http.StatusOK, "Invalid Ticket")
+		return
+	}
+
+	if validTicket {
+		c.JSON(http.StatusOK, "Valid Ticket")
+	} else {
+		c.JSON(http.StatusOK, "Ticket Already Used")
+	}
 }
