@@ -58,7 +58,7 @@ func (mongoDB *MongoDB) GetAllTickets() ([]dao.Ticket, error) {
 		return []dao.Ticket{}, err
 	}
 
-	var tickets []dao.Ticket
+	tickets := []dao.Ticket{}
 	if err = cursor.All(context.TODO(), &tickets); err != nil {
 		return []dao.Ticket{}, err
 	}
