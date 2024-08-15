@@ -29,7 +29,7 @@ func (mongoDB *MongoDB) GetAllClubs() ([]dao.Club, error) {
 		return []dao.Club{}, err
 	}
 
-	var clubs []dao.Club
+	clubs := []dao.Club{}
 	if err = cursor.All(context.TODO(), &clubs); err != nil {
 		return []dao.Club{}, err
 	}
