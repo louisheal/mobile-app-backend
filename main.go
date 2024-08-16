@@ -19,7 +19,7 @@ func main() {
 
 	router.GET("/clubs", routes.GetClubs)
 
-	router.GET("/tickets", routes.GetTickets)
+	router.GET("/tickets/:userId", routes.GetTickets)
 	router.POST("/ticket", routes.PostTicket)
 	router.PUT("/ticket", routes.PutTicket)
 
