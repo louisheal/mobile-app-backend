@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"mobile-app-backend/dao"
@@ -25,7 +24,6 @@ func (routes Routes) GetClubs(c *gin.Context) {
 }
 
 func (routes Routes) GetTickets(c *gin.Context) {
-	fmt.Println(c.Param("userId"))
 	userId, err := primitive.ObjectIDFromHex(c.Param("userId"))
 	if err != nil {
 		panic(err)
