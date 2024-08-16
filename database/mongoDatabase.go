@@ -37,10 +37,10 @@ func (mongoDB *MongoDB) GetAllClubs() ([]dao.Club, error) {
 	return clubs, nil
 }
 
-func (mongoDB *MongoDB) GetAllTickets() ([]dao.Ticket, error) {
+func (mongoDB *MongoDB) GetTickets(userId primitive.ObjectID) ([]dao.Ticket, error) {
 	collection := mongoDB.client.Database(mobileApp).Collection(tickets)
 
-	cursor, err := collection.Find(context.TODO(), bson.D{})
+	cursor, err := collection.Find(context.TODO(), bson.M{"userId": userId})
 	if err != nil {
 		return []dao.Ticket{}, err
 	}
