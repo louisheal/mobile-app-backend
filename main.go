@@ -23,5 +23,7 @@ func main() {
 	router.POST("/ticket", routes.PostTicket)
 	router.PUT("/ticket", routes.PutTicket)
 
+	router.GET("/users/:username", routes.GetUsers)
+
 	router.Run()
 }

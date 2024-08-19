@@ -72,3 +72,14 @@ func (routes Routes) PutTicket(c *gin.Context) {
 		c.JSON(http.StatusOK, "Ticket Already Used")
 	}
 }
+
+func (routes Routes) GetUsers(c *gin.Context) {
+	username := c.Param("username")
+
+	users, err := routes.database.SearchUsers(username)
+	if err != nil {
+		panic(err)
+	}
+
+	c.JSON(http.StatusOK, users)
+}

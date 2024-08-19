@@ -11,4 +11,5 @@ type Database interface {
 	GetTickets(primitive.ObjectID) ([]dao.Ticket, error)
 	CreateTicket(dao.NewTicket) (primitive.ObjectID, error)
 	UseTicket(primitive.ObjectID) (bool, error)
+	SearchUsers(string) ([]dao.User, error)
 }

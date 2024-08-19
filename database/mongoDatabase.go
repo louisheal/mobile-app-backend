@@ -16,6 +16,7 @@ import (
 const mobileApp string = "mobile-app"
 const clubs string = "clubs"
 const tickets string = "tickets"
+const users string = "users"
 
 type MongoDB struct {
 	client *mongo.Client
@@ -88,6 +89,24 @@ func (mongoDB *MongoDB) UseTicket(ticketId primitive.ObjectID) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (mongoDB *MongoDB) SearchUsers(username string) ([]dao.User, error) {
+	collection := mongoDB.client.Database(mobileApp).Collection(users)
+
+	filter := bson.M{"username": bson.M{"$regex": username}}
+
+	cursor, err := collection.Find(context.TODO(), filter)
+	if err != nil {
+		return []dao.User{}, err
+	}
+
+	var users []dao.User
+	if err = cursor.All(context.TODO(), &users); err != nil {
+		return []dao.User{}, err
+	}
+
+	return users, nil
 }
 
 func NewMongoDB() *MongoDB {
