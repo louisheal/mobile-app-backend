@@ -74,7 +74,7 @@ func (routes Routes) PutTicket(c *gin.Context) {
 }
 
 func (routes Routes) GetUsers(c *gin.Context) {
-	username := c.Query("username")
+	username := c.Param("username")
 
 	users, err := routes.database.SearchUsers(username)
 	if err != nil {
