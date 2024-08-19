@@ -94,7 +94,7 @@ func (mongoDB *MongoDB) UseTicket(ticketId primitive.ObjectID) (bool, error) {
 func (mongoDB *MongoDB) SearchUsers(username string) ([]dao.User, error) {
 	collection := mongoDB.client.Database(mobileApp).Collection(users)
 
-	filter := bson.M{"username": bson.M{"$regex": username}}
+	filter := bson.M{"username": bson.M{"$regex": username, "$options": "i"}}
 
 	cursor, err := collection.Find(context.TODO(), filter)
 	if err != nil {
