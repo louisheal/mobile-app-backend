@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"mobile-app-backend/dao"
+	"mobile-app-backend/friendStatus"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -17,6 +18,7 @@ const mobileApp string = "mobile-app"
 const clubs string = "clubs"
 const tickets string = "tickets"
 const users string = "users"
+const friends string = "friends"
 
 type MongoDB struct {
 	client *mongo.Client
@@ -95,18 +97,65 @@ func (mongoDB *MongoDB) SearchUsers(username string) ([]dao.User, error) {
 	collection := mongoDB.client.Database(mobileApp).Collection(users)
 
 	filter := bson.M{"username": bson.M{"$regex": username, "$options": "i"}}
+	users := []dao.User{}
 
 	cursor, err := collection.Find(context.TODO(), filter)
 	if err != nil {
-		return []dao.User{}, err
+		return users, err
 	}
 
-	var users []dao.User
 	if err = cursor.All(context.TODO(), &users); err != nil {
-		return []dao.User{}, err
+		return users, err
 	}
 
 	return users, nil
+}
+
+func (mongoDB *MongoDB) SendFriendRequest(friendRequest dao.FriendRequest) error {
+	collection := mongoDB.client.Database(mobileApp).Collection(friends)
+
+	_, err := collection.InsertOne(context.TODO(), friendRequest)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (mongoDB *MongoDB) GetFriendRequestStatus(fstUser primitive.ObjectID, sndUser primitive.ObjectID) (friendStatus.FriendStatus, error) {
+	collection := mongoDB.client.Database(mobileApp).Collection(friends)
+
+	var friendRequest dao.FriendRequest
+
+	// TODO: Rename flags
+	one_o, o_one := true, true
+
+	filter := bson.M{"sender": fstUser, "recipient": sndUser}
+	err := collection.FindOne(context.TODO(), filter).Decode(&friendRequest)
+	if err == mongo.ErrNoDocuments {
+		one_o = false
+	} else if err != nil {
+		return friendStatus.None, err
+	}
+
+	filter = bson.M{"sender": sndUser, "recipient": fstUser}
+	err = collection.FindOne(context.TODO(), filter).Decode(&friendRequest)
+	if err == mongo.ErrNoDocuments {
+		o_one = false
+	} else if err != nil {
+		return friendStatus.None, err
+	}
+
+	switch {
+	case one_o && o_one:
+		return friendStatus.Accepted, nil
+	case one_o:
+		return friendStatus.Pending, nil
+	case o_one:
+		return friendStatus.Accept, nil
+	default:
+		return friendStatus.None, nil
+	}
 }
 
 func NewMongoDB() *MongoDB {
