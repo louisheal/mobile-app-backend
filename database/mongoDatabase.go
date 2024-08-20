@@ -127,35 +127,33 @@ func (mongoDB *MongoDB) GetFriendRequestStatus(fstUser primitive.ObjectID, sndUs
 
 	var friendRequest dao.FriendRequest
 
-	// TODO: Rename flags
-	one_o, o_one := true, true
-
 	filter := bson.M{"sender": fstUser, "recipient": sndUser}
 	err := collection.FindOne(context.TODO(), filter).Decode(&friendRequest)
-	if err == mongo.ErrNoDocuments {
-		one_o = false
-	} else if err != nil {
+	sent := err != mongo.ErrNoDocuments
+	if err != nil && sent {
 		return friendStatus.None, err
 	}
 
 	filter = bson.M{"sender": sndUser, "recipient": fstUser}
-	err = collection.FindOne(context.TODO(), filter).Decode(&friendRequest)
-	if err == mongo.ErrNoDocuments {
-		o_one = false
-	} else if err != nil {
-		return friendStatus.None, err
+	errSnd := collection.FindOne(context.TODO(), filter).Decode(&friendRequest)
+	received := errSnd != mongo.ErrNoDocuments
+	if errSnd != nil && received {
+		return friendStatus.None, errSnd
 	}
 
+	var status friendStatus.FriendStatus
 	switch {
-	case one_o && o_one:
-		return friendStatus.Accepted, nil
-	case one_o:
-		return friendStatus.Pending, nil
-	case o_one:
-		return friendStatus.Accept, nil
+	case sent && received:
+		status = friendStatus.Accepted
+	case sent:
+		status = friendStatus.Pending
+	case received:
+		status = friendStatus.Accept
 	default:
-		return friendStatus.None, nil
+		status = friendStatus.None
 	}
+
+	return status, nil
 }
 
 func NewMongoDB() *MongoDB {
