@@ -1,4 +1,4 @@
-package dao
+package clubs
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
