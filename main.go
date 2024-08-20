@@ -2,6 +2,7 @@ package main
 
 import (
 	"mobile-app-backend/database"
+	"mobile-app-backend/routes"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -9,7 +10,7 @@ import (
 
 func main() {
 	database := database.NewMongoDB()
-	routes := Routes{database}
+	routes := routes.NewRoutes(database)
 
 	router := gin.Default()
 
@@ -24,6 +25,9 @@ func main() {
 	router.PUT("/ticket", routes.PutTicket)
 
 	router.GET("/users/:username", routes.GetUsers)
+
+	router.POST("/friends", routes.PostFriendRequest)
+	router.GET("/friends/:fstUser/:sndUser", routes.GetFriendRequestStatus)
 
 	router.Run()
 }
