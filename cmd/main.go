@@ -10,38 +10,54 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func main() {
 	mongoDatabase := db.NewMongoClient().Database("mobile-app")
 
-	ticketCollection := mongoDatabase.Collection("tickets")
-	ticketRepository := tickets.NewMongoTicketRepository(ticketCollection)
-	ticketService := tickets.NewTicketService(ticketRepository)
-	ticketHandler := tickets.NewTicketHandler(ticketService)
+	router := setupRouter()
 
-	clubCollection := mongoDatabase.Collection("clubs")
-	clubRespository := clubs.NewMongoClubRepository(clubCollection)
-	clubService := clubs.NewClubService(clubRespository)
-	clubHandler := clubs.NewClubHandler(clubService)
+	ticketHandler := setupTicketHandler(mongoDatabase.Collection("tickets"))
+	clubHandler := setupClubHandler(mongoDatabase.Collection("clubs"))
+	userHandler := setupUserHandler(mongoDatabase.Collection("users"))
+	friendHandler := setupFriendHandler(mongoDatabase.Collection("friends"))
 
-	userCollection := mongoDatabase.Collection("users")
-	userRepository := users.NewMongoUserRepository(userCollection)
-	userService := users.NewUserService(userRepository)
-	userHandler := users.NewUserHandler(userService)
+	api.RegisterRoutes(router, ticketHandler, clubHandler, userHandler, friendHandler)
 
-	friendCollection := mongoDatabase.Collection("friends")
-	friendRespository := friends.NewMongoFriendRepository(friendCollection)
-	friendService := friends.NewFriendService(friendRespository)
-	friendHandler := friends.NewFriendHandler(friendService)
+	router.Run()
+}
 
+func setupRouter() *gin.Engine {
 	router := gin.Default()
 
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:8081"}
 	router.Use(cors.New(config))
 
-	api.RegisterRoutes(router, ticketHandler, clubHandler, userHandler, friendHandler)
+	return router
+}
 
-	router.Run()
+func setupTicketHandler(coll *mongo.Collection) *tickets.TicketHandler {
+	ticketRepository := tickets.NewMongoTicketRepository(coll)
+	ticketService := tickets.NewTicketService(ticketRepository)
+	return tickets.NewTicketHandler(ticketService)
+}
+
+func setupClubHandler(coll *mongo.Collection) *clubs.ClubHandler {
+	clubRepository := clubs.NewMongoClubRepository(coll)
+	clubService := clubs.NewClubService(clubRepository)
+	return clubs.NewClubHandler(clubService)
+}
+
+func setupUserHandler(coll *mongo.Collection) *users.UserHandler {
+	userRepository := users.NewMongoUserRepository(coll)
+	userService := users.NewUserService(userRepository)
+	return users.NewUserHandler(userService)
+}
+
+func setupFriendHandler(coll *mongo.Collection) *friends.FriendHandler {
+	friendRepository := friends.NewMongoFriendRepository(coll)
+	friendService := friends.NewFriendService(friendRepository)
+	return friends.NewFriendHandler(friendService)
 }
