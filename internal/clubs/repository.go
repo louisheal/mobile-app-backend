@@ -15,8 +15,8 @@ func NewMongoClubRepository(c *mongo.Collection) *MongoClubRepository {
 	return &MongoClubRepository{coll: c}
 }
 
-func (db *MongoClubRepository) GetAllClubs() ([]Club, error) {
-	cursor, err := db.coll.Find(context.TODO(), bson.D{})
+func (r *MongoClubRepository) GetAllClubs() ([]Club, error) {
+	cursor, err := r.coll.Find(context.TODO(), bson.D{})
 	if err != nil {
 		return []Club{}, err
 	}

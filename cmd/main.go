@@ -14,14 +14,14 @@ import (
 )
 
 func main() {
-	mongoDatabase := db.NewMongoClient().Database("mobile-app")
+	database := db.NewMongoDatabase()
 
 	router := setupRouter()
 
-	ticketHandler := setupTicketHandler(mongoDatabase.Collection("tickets"))
-	clubHandler := setupClubHandler(mongoDatabase.Collection("clubs"))
-	userHandler := setupUserHandler(mongoDatabase.Collection("users"))
-	friendHandler := setupFriendHandler(mongoDatabase.Collection("friends"))
+	ticketHandler := setupTicketHandler(database.Collection("tickets"))
+	clubHandler := setupClubHandler(database.Collection("clubs"))
+	userHandler := setupUserHandler(database.Collection("users"))
+	friendHandler := setupFriendHandler(database.Collection("friends"))
 
 	api.RegisterRoutes(router, ticketHandler, clubHandler, userHandler, friendHandler)
 

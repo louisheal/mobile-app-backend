@@ -36,5 +36,5 @@ func (r *MongoFriendRepository) FriendExists(fstUser primitive.ObjectID, sndUser
 		return false, err
 	}
 
-	return true, err
+	return true, nil
 }

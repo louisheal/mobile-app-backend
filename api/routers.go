@@ -12,7 +12,7 @@ import (
 func registerTicketRoutes(router *gin.Engine, ticketHandler *tickets.TicketHandler) {
 	ticketRoutes := router.Group("/tickets")
 	{
-		ticketRoutes.GET("", ticketHandler.GetTickets)
+		ticketRoutes.GET("", ticketHandler.GetUsersTickets)
 		ticketRoutes.POST("", ticketHandler.PostTicket)
 		ticketRoutes.PUT("/:ticketID", ticketHandler.PutTicket)
 	}
@@ -28,7 +28,7 @@ func registerClubRoutes(router *gin.Engine, clubHandler *clubs.ClubHandler) {
 func registerUserRoutes(router *gin.Engine, userHandler *users.UserHandler) {
 	userRoutes := router.Group("/users")
 	{
-		userRoutes.GET("", userHandler.GetUsers)
+		userRoutes.GET("", userHandler.SearchUsers)
 	}
 }
 

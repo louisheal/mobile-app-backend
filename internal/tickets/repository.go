@@ -43,7 +43,8 @@ func (r *MongoTicketRepository) GetTicket(ticketId primitive.ObjectID) (Ticket, 
 	return result, nil
 }
 
-func (r *MongoTicketRepository) CreateTicket(newTicket NewTicket) (primitive.ObjectID, error) {
+func (r *MongoTicketRepository) CreateTicket(newTicket TicketInput) (primitive.ObjectID, error) {
+
 	result, err := r.coll.InsertOne(context.TODO(), newTicket)
 	if err != nil {
 		return primitive.ObjectID{}, err

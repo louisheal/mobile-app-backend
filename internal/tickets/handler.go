@@ -1,6 +1,7 @@
 package tickets
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +16,7 @@ func NewTicketHandler(s *TicketService) *TicketHandler {
 	return &TicketHandler{service: s}
 }
 
-func (h *TicketHandler) GetTickets(c *gin.Context) {
+func (h *TicketHandler) GetUsersTickets(c *gin.Context) {
 	userID, err := primitive.ObjectIDFromHex(c.Query("userID"))
 	if err != nil {
 		panic(err)
@@ -30,15 +31,19 @@ func (h *TicketHandler) GetTickets(c *gin.Context) {
 }
 
 func (h *TicketHandler) PostTicket(c *gin.Context) {
-	var newTicket NewTicket
-	if err := c.BindJSON(&newTicket); err != nil {
+	var ticket TicketInput
+	if err := c.BindJSON(&ticket); err != nil {
 		panic(err)
 	}
 
-	id, err := h.service.CreateTicket(newTicket)
+	fmt.Println(ticket.ClubID)
+
+	id, err := h.service.CreateTicket(ticket)
 	if err != nil {
 		panic(err)
 	}
+
+	fmt.Println(id)
 
 	c.JSON(http.StatusOK, id)
 }

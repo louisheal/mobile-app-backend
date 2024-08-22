@@ -14,8 +14,8 @@ func NewUserHandler(s *UserService) *UserHandler {
 	return &UserHandler{service: s}
 }
 
-func (h *UserHandler) GetUsers(c *gin.Context) {
-	username := c.Param("username")
+func (h *UserHandler) SearchUsers(c *gin.Context) {
+	username := c.Query("username")
 
 	users, err := h.service.SearchUsers(username)
 	if err != nil {

@@ -7,7 +7,7 @@ import (
 type TicketRepository interface {
 	GetUsersTickets(primitive.ObjectID) ([]Ticket, error)
 	GetTicket(primitive.ObjectID) (Ticket, error)
-	CreateTicket(NewTicket) (primitive.ObjectID, error)
+	CreateTicket(TicketInput) (primitive.ObjectID, error)
 	UseTicket(primitive.ObjectID) error
 }
 
@@ -23,7 +23,7 @@ func (s *TicketService) GetUsersTickets(userID primitive.ObjectID) ([]Ticket, er
 	return s.repo.GetUsersTickets(userID)
 }
 
-func (s *TicketService) CreateTicket(newTicket NewTicket) (primitive.ObjectID, error) {
+func (s *TicketService) CreateTicket(newTicket TicketInput) (primitive.ObjectID, error) {
 	return s.repo.CreateTicket(newTicket)
 }
 

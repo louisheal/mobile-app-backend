@@ -1,6 +1,8 @@
 package friends
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type FriendRepository interface {
 	CreateFriend(FriendInput) error

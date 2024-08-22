@@ -1,6 +1,8 @@
 package friends
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type FriendInput struct {
 	Sender    primitive.ObjectID `json:"sender" bson:"sender"`
@@ -10,9 +12,9 @@ type FriendInput struct {
 type FriendStatus string
 
 const (
-	Accepted = "valid"
-	Accept   = "used"
-	Pending  = "invalid"
+	Accepted = "accepted"
+	Accept   = "accept"
+	Pending  = "pending"
 	Send     = "send"
 	None     = ""
 )

@@ -19,7 +19,7 @@ type Ticket struct {
 	Used   bool               `json:"used" bson:"used"`
 }
 
-type NewTicket struct {
+type TicketInput struct {
 	ClubID primitive.ObjectID `json:"clubId" bson:"clubId"`
 	UserID primitive.ObjectID `json:"userId" bson:"userId"`
 	Used   bool               `json:"used" bson:"used"`
