@@ -8,15 +8,15 @@ import (
 )
 
 type MongoClubRepository struct {
-	coll *mongo.Collection
+	clubs *mongo.Collection
 }
 
-func NewMongoClubRepository(c *mongo.Collection) *MongoClubRepository {
-	return &MongoClubRepository{coll: c}
+func NewMongoClubRepository(db *mongo.Database) *MongoClubRepository {
+	return &MongoClubRepository{clubs: db.Collection("clubs")}
 }
 
 func (r *MongoClubRepository) GetAllClubs() ([]Club, error) {
-	cursor, err := r.coll.Find(context.TODO(), bson.D{})
+	cursor, err := r.clubs.Find(context.TODO(), bson.D{})
 	if err != nil {
 		return []Club{}, err
 	}

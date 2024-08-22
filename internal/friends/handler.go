@@ -66,3 +66,17 @@ func (h *FriendHandler) DeleteFriend(c *gin.Context) {
 
 	c.JSON(http.StatusOK, nil)
 }
+
+func (h *FriendHandler) GetFriendRequests(c *gin.Context) {
+	userID, err := primitive.ObjectIDFromHex(c.Query("userID"))
+	if err != nil {
+		panic(err)
+	}
+
+	requests, err := h.service.GetFriendRequests(userID)
+	if err != nil {
+		panic(err)
+	}
+
+	c.JSON(http.StatusOK, requests)
+}
