@@ -47,3 +47,22 @@ func (h *FriendHandler) GetFriendStatus(c *gin.Context) {
 
 	c.JSON(http.StatusOK, status)
 }
+
+func (h *FriendHandler) DeleteFriend(c *gin.Context) {
+	fstUser, err := primitive.ObjectIDFromHex(c.Param("fstUser"))
+	if err != nil {
+		panic(err)
+	}
+
+	sndUser, err := primitive.ObjectIDFromHex(c.Param("sndUser"))
+	if err != nil {
+		panic(err)
+	}
+
+	err = h.service.RemoveFriend(fstUser, sndUser)
+	if err != nil {
+		panic(err)
+	}
+
+	c.JSON(http.StatusOK, nil)
+}

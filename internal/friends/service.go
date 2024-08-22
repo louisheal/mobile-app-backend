@@ -7,6 +7,7 @@ import (
 type FriendRepository interface {
 	CreateFriend(FriendInput) error
 	FriendExists(users.UserID, users.UserID) (bool, error)
+	DeleteFriend(users.UserID, users.UserID) error
 }
 
 type FriendService struct {
@@ -45,4 +46,12 @@ func (s *FriendService) GetFriendStatus(fstUser users.UserID, sndUser users.User
 	}
 
 	return status, nil
+}
+
+func (s *FriendService) RemoveFriend(fstUser users.UserID, sndUser users.UserID) error {
+	if err := s.repo.DeleteFriend(fstUser, sndUser); err != nil {
+		return err
+	}
+
+	return s.repo.DeleteFriend(sndUser, fstUser)
 }

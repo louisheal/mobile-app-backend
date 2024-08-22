@@ -37,6 +37,7 @@ func registerFriendRoutes(router *gin.Engine, friendHandler *friends.FriendHandl
 	{
 		friendRoutes.POST("", friendHandler.PostFriendRequest)
 		friendRoutes.GET("/:fstUser/:sndUser", friendHandler.GetFriendStatus)
+		friendRoutes.DELETE("/:fstUser/:sndUser", friendHandler.DeleteFriend)
 	}
 }
 

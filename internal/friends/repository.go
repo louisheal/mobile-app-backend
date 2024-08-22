@@ -38,3 +38,9 @@ func (r *MongoFriendRepository) FriendExists(fstUser users.UserID, sndUser users
 
 	return true, nil
 }
+
+func (r *MongoFriendRepository) DeleteFriend(fstUser users.UserID, sndUser users.UserID) error {
+	filter := bson.M{"sender": fstUser, "recipient": sndUser}
+	_, err := r.coll.DeleteOne(context.TODO(), filter)
+	return err
+}
