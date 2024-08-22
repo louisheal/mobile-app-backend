@@ -55,7 +55,11 @@ func (s *FriendService) RemoveFriend(fstUser users.UserID, sndUser users.UserID)
 		return err
 	}
 
-	return s.repo.DeleteFriend(sndUser, fstUser)
+	if err := s.repo.DeleteFriend(sndUser, fstUser); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *FriendService) GetFriendRequests(userID users.UserID) ([]users.User, error) {
