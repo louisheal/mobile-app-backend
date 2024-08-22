@@ -1,6 +1,9 @@
 package tickets
 
 import (
+	"mobile-app-backend/internal/clubs"
+	"mobile-app-backend/internal/users"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -12,15 +15,17 @@ const (
 	Invalid = "invalid"
 )
 
+type TicketID = primitive.ObjectID
+
 type Ticket struct {
-	ID     primitive.ObjectID `json:"id" bson:"_id"`
-	ClubID primitive.ObjectID `json:"clubId" bson:"clubId"`
-	UserID primitive.ObjectID `json:"userId" bson:"userId"`
-	Used   bool               `json:"used" bson:"used"`
+	ID     TicketID     `json:"id" bson:"_id"`
+	ClubID clubs.ClubID `json:"clubId" bson:"clubId"`
+	UserID users.UserID `json:"userId" bson:"userId"`
+	Used   bool         `json:"used" bson:"used"`
 }
 
 type TicketInput struct {
-	ClubID primitive.ObjectID `json:"clubId" bson:"clubId"`
-	UserID primitive.ObjectID `json:"userId" bson:"userId"`
-	Used   bool               `json:"used" bson:"used"`
+	ClubID clubs.ClubID `json:"clubId" bson:"clubId"`
+	UserID users.UserID `json:"userId" bson:"userId"`
+	Used   bool         `json:"used" bson:"used"`
 }

@@ -1,12 +1,12 @@
 package friends
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"mobile-app-backend/internal/users"
 )
 
 type FriendInput struct {
-	Sender    primitive.ObjectID `json:"sender" bson:"sender"`
-	Recipient primitive.ObjectID `json:"recipient" bson:"recipient"`
+	Sender    users.UserID `json:"sender" bson:"sender"`
+	Recipient users.UserID `json:"recipient" bson:"recipient"`
 }
 
 type FriendStatus string

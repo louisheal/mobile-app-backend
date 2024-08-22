@@ -2,9 +2,9 @@ package tickets
 
 import (
 	"context"
+	"mobile-app-backend/internal/users"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -17,7 +17,7 @@ func NewMongoTicketRepository(c *mongo.Collection) *MongoTicketRepository {
 	return &MongoTicketRepository{coll: c}
 }
 
-func (r *MongoTicketRepository) GetUsersTickets(userId primitive.ObjectID) ([]Ticket, error) {
+func (r *MongoTicketRepository) GetUsersTickets(userId users.UserID) ([]Ticket, error) {
 	cursor, err := r.coll.Find(context.TODO(), bson.M{"userId": userId})
 	if err != nil {
 		return []Ticket{}, err
@@ -31,7 +31,7 @@ func (r *MongoTicketRepository) GetUsersTickets(userId primitive.ObjectID) ([]Ti
 	return result, nil
 }
 
-func (r *MongoTicketRepository) GetTicket(ticketId primitive.ObjectID) (Ticket, error) {
+func (r *MongoTicketRepository) GetTicket(ticketId TicketID) (Ticket, error) {
 	filter := bson.M{"_id": ticketId}
 
 	var result Ticket
@@ -43,19 +43,19 @@ func (r *MongoTicketRepository) GetTicket(ticketId primitive.ObjectID) (Ticket, 
 	return result, nil
 }
 
-func (r *MongoTicketRepository) CreateTicket(newTicket TicketInput) (primitive.ObjectID, error) {
+func (r *MongoTicketRepository) CreateTicket(newTicket TicketInput) (TicketID, error) {
 
 	result, err := r.coll.InsertOne(context.TODO(), newTicket)
 	if err != nil {
-		return primitive.ObjectID{}, err
+		return TicketID{}, err
 	}
 
-	id := result.InsertedID.(primitive.ObjectID)
+	id := result.InsertedID.(TicketID)
 
 	return id, nil
 }
 
-func (r *MongoTicketRepository) UseTicket(ticketId primitive.ObjectID) error {
+func (r *MongoTicketRepository) UseTicket(ticketId TicketID) error {
 	filter := bson.M{"_id": ticketId}
 	update := bson.M{"$set": bson.M{"used": true}}
 	opts := options.Update().SetUpsert(true)

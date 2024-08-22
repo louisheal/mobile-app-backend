@@ -2,9 +2,9 @@ package friends
 
 import (
 	"context"
+	"mobile-app-backend/internal/users"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -25,7 +25,7 @@ func (r *MongoFriendRepository) CreateFriend(friend FriendInput) error {
 	return nil
 }
 
-func (r *MongoFriendRepository) FriendExists(fstUser primitive.ObjectID, sndUser primitive.ObjectID) (bool, error) {
+func (r *MongoFriendRepository) FriendExists(fstUser users.UserID, sndUser users.UserID) (bool, error) {
 	var friend FriendInput
 
 	filter := bson.M{"sender": fstUser, "recipient": sndUser}

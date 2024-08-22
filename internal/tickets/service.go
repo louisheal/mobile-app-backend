@@ -1,14 +1,14 @@
 package tickets
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"mobile-app-backend/internal/users"
 )
 
 type TicketRepository interface {
-	GetUsersTickets(primitive.ObjectID) ([]Ticket, error)
-	GetTicket(primitive.ObjectID) (Ticket, error)
-	CreateTicket(TicketInput) (primitive.ObjectID, error)
-	UseTicket(primitive.ObjectID) error
+	GetUsersTickets(users.UserID) ([]Ticket, error)
+	GetTicket(TicketID) (Ticket, error)
+	CreateTicket(TicketInput) (TicketID, error)
+	UseTicket(TicketID) error
 }
 
 type TicketService struct {
@@ -19,15 +19,15 @@ func NewTicketService(r TicketRepository) *TicketService {
 	return &TicketService{repo: r}
 }
 
-func (s *TicketService) GetUsersTickets(userID primitive.ObjectID) ([]Ticket, error) {
+func (s *TicketService) GetUsersTickets(userID users.UserID) ([]Ticket, error) {
 	return s.repo.GetUsersTickets(userID)
 }
 
-func (s *TicketService) CreateTicket(newTicket TicketInput) (primitive.ObjectID, error) {
+func (s *TicketService) CreateTicket(newTicket TicketInput) (TicketID, error) {
 	return s.repo.CreateTicket(newTicket)
 }
 
-func (s *TicketService) UseTicket(ticketID primitive.ObjectID) TicketStatus {
+func (s *TicketService) UseTicket(ticketID TicketID) TicketStatus {
 	if ticket, err := s.repo.GetTicket(ticketID); err != nil {
 		return Invalid
 	} else if ticket.Used {
