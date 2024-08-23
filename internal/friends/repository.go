@@ -27,10 +27,10 @@ func (r *MongoFriendRepository) CreateFriend(friend FriendInput) error {
 	return nil
 }
 
-func (r *MongoFriendRepository) FriendExists(fstUser users.UserID, sndUser users.UserID) (bool, error) {
+func (r *MongoFriendRepository) FriendExists(sender users.UserID, recipient users.UserID) (bool, error) {
 	var friend FriendInput
 
-	filter := bson.M{"sender": fstUser, "recipient": sndUser}
+	filter := bson.M{"sender": sender, "recipient": recipient}
 	err := r.friends.FindOne(context.TODO(), filter).Decode(&friend)
 	if err == mongo.ErrNoDocuments {
 		return false, nil
@@ -47,30 +47,36 @@ func (r *MongoFriendRepository) DeleteFriend(fstUser users.UserID, sndUser users
 	return err
 }
 
-func (r *MongoFriendRepository) GetUsersFriends(userID users.UserID) ([]FriendInput, error) {
+func (r *MongoFriendRepository) GetUsersFriends(userID users.UserID) ([]users.User, error) {
 	filter := bson.M{"recipient": userID}
 
 	cursor, err := r.friends.Find(context.TODO(), filter)
 	if err != nil {
-		return []FriendInput{}, err
+		return []users.User{}, err
 	}
 
-	friendIDs := []FriendInput{}
-	if err = cursor.All(context.TODO(), &friendIDs); err != nil {
-		return []FriendInput{}, err
+	friends := []FriendInput{}
+	if err = cursor.All(context.TODO(), &friends); err != nil {
+		return []users.User{}, err
 	}
 
-	return friendIDs, nil
-}
+	result := []users.User{}
+	for _, friendInput := range friends {
 
-func (r *MongoFriendRepository) GetUser(userID users.UserID) (users.User, error) {
-	filter := bson.M{"_id": userID}
+		if exists, err := r.FriendExists(userID, friendInput.Sender); err != nil {
+			return []users.User{}, err
+		} else if !exists {
+			filter := bson.M{"_id": friendInput.Sender}
 
-	var user users.User
-	err := r.users.FindOne(context.TODO(), filter).Decode(&user)
-	if err != nil {
-		return users.User{}, nil
+			var friend users.User
+			err := r.users.FindOne(context.TODO(), filter).Decode(&friend)
+			if err != nil {
+				return []users.User{}, nil
+			}
+
+			result = append(result, friend)
+		}
 	}
 
-	return user, nil
+	return result, nil
 }

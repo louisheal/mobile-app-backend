@@ -8,8 +8,7 @@ type FriendRepository interface {
 	CreateFriend(FriendInput) error
 	FriendExists(users.UserID, users.UserID) (bool, error)
 	DeleteFriend(users.UserID, users.UserID) error
-	GetUsersFriends(users.UserID) ([]FriendInput, error)
-	GetUser(users.UserID) (users.User, error)
+	GetUsersFriends(users.UserID) ([]users.User, error)
 }
 
 type FriendService struct {
@@ -68,20 +67,5 @@ func (s *FriendService) GetFriendRequests(userID users.UserID) ([]users.User, er
 		return []users.User{}, err
 	}
 
-	result := []users.User{}
-	for _, friend := range friends {
-		exists, err := s.repo.FriendExists(userID, friend.Sender)
-		if err != nil {
-			return []users.User{}, err
-		}
-		if !exists {
-			friend, err := s.repo.GetUser(friend.Sender)
-			if err != nil {
-				return []users.User{}, err
-			}
-			result = append(result, friend)
-		}
-	}
-
-	return result, nil
+	return friends, nil
 }
