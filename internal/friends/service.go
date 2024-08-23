@@ -1,12 +1,14 @@
 package friends
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"mobile-app-backend/internal/users"
 )
 
 type FriendRepository interface {
 	CreateFriend(FriendInput) error
-	FriendExists(primitive.ObjectID, primitive.ObjectID) (bool, error)
+	FriendExists(users.UserID, users.UserID) (bool, error)
+	DeleteFriend(users.UserID, users.UserID) error
+	GetUsersFriends(users.UserID) ([]users.User, error)
 }
 
 type FriendService struct {
@@ -21,7 +23,7 @@ func (s *FriendService) CreateFriend(friend FriendInput) error {
 	return s.repo.CreateFriend(friend)
 }
 
-func (s *FriendService) GetFriendStatus(fstUser primitive.ObjectID, sndUser primitive.ObjectID) (FriendStatus, error) {
+func (s *FriendService) GetFriendStatus(fstUser users.UserID, sndUser users.UserID) (FriendStatus, error) {
 	fstExists, err := s.repo.FriendExists(fstUser, sndUser)
 	if err != nil {
 		return None, err
@@ -45,4 +47,25 @@ func (s *FriendService) GetFriendStatus(fstUser primitive.ObjectID, sndUser prim
 	}
 
 	return status, nil
+}
+
+func (s *FriendService) RemoveFriend(fstUser users.UserID, sndUser users.UserID) error {
+	if err := s.repo.DeleteFriend(fstUser, sndUser); err != nil {
+		return err
+	}
+
+	if err := s.repo.DeleteFriend(sndUser, fstUser); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *FriendService) GetFriendRequests(userID users.UserID) ([]users.User, error) {
+	friends, err := s.repo.GetUsersFriends(userID)
+	if err != nil {
+		return []users.User{}, err
+	}
+
+	return friends, nil
 }

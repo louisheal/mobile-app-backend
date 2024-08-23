@@ -10,7 +10,6 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func main() {
@@ -18,10 +17,21 @@ func main() {
 
 	router := setupRouter()
 
-	ticketHandler := setupTicketHandler(database.Collection("tickets"))
-	clubHandler := setupClubHandler(database.Collection("clubs"))
-	userHandler := setupUserHandler(database.Collection("users"))
-	friendHandler := setupFriendHandler(database.Collection("friends"))
+	ticketRepository := tickets.NewMongoTicketRepository(database)
+	ticketService := tickets.NewTicketService(ticketRepository)
+	ticketHandler := tickets.NewTicketHandler(ticketService)
+
+	clubRepository := clubs.NewMongoClubRepository(database)
+	clubService := clubs.NewClubService(clubRepository)
+	clubHandler := clubs.NewClubHandler(clubService)
+
+	userRepository := users.NewMongoUserRepository(database)
+	userService := users.NewUserService(userRepository)
+	userHandler := users.NewUserHandler(userService)
+
+	friendRepository := friends.NewMongoFriendRepository(database)
+	friendService := friends.NewFriendService(friendRepository)
+	friendHandler := friends.NewFriendHandler(friendService)
 
 	api.RegisterRoutes(router, ticketHandler, clubHandler, userHandler, friendHandler)
 
@@ -36,28 +46,4 @@ func setupRouter() *gin.Engine {
 	router.Use(cors.New(config))
 
 	return router
-}
-
-func setupTicketHandler(coll *mongo.Collection) *tickets.TicketHandler {
-	ticketRepository := tickets.NewMongoTicketRepository(coll)
-	ticketService := tickets.NewTicketService(ticketRepository)
-	return tickets.NewTicketHandler(ticketService)
-}
-
-func setupClubHandler(coll *mongo.Collection) *clubs.ClubHandler {
-	clubRepository := clubs.NewMongoClubRepository(coll)
-	clubService := clubs.NewClubService(clubRepository)
-	return clubs.NewClubHandler(clubService)
-}
-
-func setupUserHandler(coll *mongo.Collection) *users.UserHandler {
-	userRepository := users.NewMongoUserRepository(coll)
-	userService := users.NewUserService(userRepository)
-	return users.NewUserHandler(userService)
-}
-
-func setupFriendHandler(coll *mongo.Collection) *friends.FriendHandler {
-	friendRepository := friends.NewMongoFriendRepository(coll)
-	friendService := friends.NewFriendService(friendRepository)
-	return friends.NewFriendHandler(friendService)
 }

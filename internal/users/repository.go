@@ -8,17 +8,17 @@ import (
 )
 
 type MongoUserRepository struct {
-	coll *mongo.Collection
+	users *mongo.Collection
 }
 
-func NewMongoUserRepository(c *mongo.Collection) *MongoUserRepository {
-	return &MongoUserRepository{coll: c}
+func NewMongoUserRepository(db *mongo.Database) *MongoUserRepository {
+	return &MongoUserRepository{users: db.Collection("users")}
 }
 
 func (r *MongoUserRepository) SearchUsers(username string) ([]User, error) {
 	filter := bson.M{"username": bson.M{"$regex": username, "$options": "i"}}
 
-	cursor, err := r.coll.Find(context.TODO(), filter)
+	cursor, err := r.users.Find(context.TODO(), filter)
 	if err != nil {
 		return []User{}, err
 	}
