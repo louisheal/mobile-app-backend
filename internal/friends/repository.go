@@ -55,13 +55,13 @@ func (r *MongoFriendRepository) GetUsersFriends(userID users.UserID) ([]users.Us
 		return []users.User{}, err
 	}
 
-	friends := []FriendInput{}
-	if err = cursor.All(context.TODO(), &friends); err != nil {
+	friendInputs := []FriendInput{}
+	if err = cursor.All(context.TODO(), &friendInputs); err != nil {
 		return []users.User{}, err
 	}
 
 	result := []users.User{}
-	for _, friendInput := range friends {
+	for _, friendInput := range friendInputs {
 
 		if exists, err := r.FriendExists(userID, friendInput.Sender); err != nil {
 			return []users.User{}, err
@@ -89,13 +89,13 @@ func (r *MongoFriendRepository) GetUsersFriendRequests(userID users.UserID) ([]u
 		return []users.User{}, err
 	}
 
-	friends := []FriendInput{}
-	if err = cursor.All(context.TODO(), &friends); err != nil {
+	friendInputs := []FriendInput{}
+	if err = cursor.All(context.TODO(), &friendInputs); err != nil {
 		return []users.User{}, err
 	}
 
 	result := []users.User{}
-	for _, friendInput := range friends {
+	for _, friendInput := range friendInputs {
 
 		if exists, err := r.FriendExists(userID, friendInput.Sender); err != nil {
 			return []users.User{}, err
