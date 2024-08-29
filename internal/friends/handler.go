@@ -80,3 +80,17 @@ func (h *FriendHandler) GetFriendRequests(c *gin.Context) {
 
 	c.JSON(http.StatusOK, requests)
 }
+
+func (h *FriendHandler) GetFriends(c *gin.Context) {
+	userID, err := primitive.ObjectIDFromHex(c.Query("userID"))
+	if err != nil {
+		panic(err)
+	}
+
+	friends, err := h.service.GetUsersFriends(userID)
+	if err != nil {
+		panic(err)
+	}
+
+	c.JSON(http.StatusOK, friends)
+}

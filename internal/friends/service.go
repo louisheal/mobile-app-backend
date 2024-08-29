@@ -9,6 +9,7 @@ type FriendRepository interface {
 	FriendExists(users.UserID, users.UserID) (bool, error)
 	DeleteFriend(users.UserID, users.UserID) error
 	GetUsersFriends(users.UserID) ([]users.User, error)
+	GetUsersFriendRequests(users.UserID) ([]users.User, error)
 }
 
 type FriendService struct {
@@ -19,8 +20,16 @@ func NewFriendService(r FriendRepository) *FriendService {
 	return &FriendService{repo: r}
 }
 
+func (s *FriendService) GetUsersFriends(userID users.UserID) ([]users.User, error) {
+	return s.repo.GetUsersFriends(userID)
+}
+
 func (s *FriendService) CreateFriend(friend FriendInput) error {
 	return s.repo.CreateFriend(friend)
+}
+
+func (s *FriendService) GetFriendRequests(userID users.UserID) ([]users.User, error) {
+	return s.repo.GetUsersFriendRequests(userID)
 }
 
 func (s *FriendService) GetFriendStatus(fstUser users.UserID, sndUser users.UserID) (FriendStatus, error) {
@@ -59,13 +68,4 @@ func (s *FriendService) RemoveFriend(fstUser users.UserID, sndUser users.UserID)
 	}
 
 	return nil
-}
-
-func (s *FriendService) GetFriendRequests(userID users.UserID) ([]users.User, error) {
-	friends, err := s.repo.GetUsersFriends(userID)
-	if err != nil {
-		return []users.User{}, err
-	}
-
-	return friends, nil
 }

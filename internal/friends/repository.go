@@ -55,13 +55,47 @@ func (r *MongoFriendRepository) GetUsersFriends(userID users.UserID) ([]users.Us
 		return []users.User{}, err
 	}
 
-	friends := []FriendInput{}
-	if err = cursor.All(context.TODO(), &friends); err != nil {
+	friendInputs := []FriendInput{}
+	if err = cursor.All(context.TODO(), &friendInputs); err != nil {
 		return []users.User{}, err
 	}
 
 	result := []users.User{}
-	for _, friendInput := range friends {
+	for _, friendInput := range friendInputs {
+
+		if exists, err := r.FriendExists(userID, friendInput.Sender); err != nil {
+			return []users.User{}, err
+		} else if exists {
+			filter := bson.M{"_id": friendInput.Sender}
+
+			var friend users.User
+			err := r.users.FindOne(context.TODO(), filter).Decode(&friend)
+			if err != nil {
+				return []users.User{}, nil
+			}
+
+			result = append(result, friend)
+		}
+	}
+
+	return result, nil
+}
+
+func (r *MongoFriendRepository) GetUsersFriendRequests(userID users.UserID) ([]users.User, error) {
+	filter := bson.M{"recipient": userID}
+
+	cursor, err := r.friends.Find(context.TODO(), filter)
+	if err != nil {
+		return []users.User{}, err
+	}
+
+	friendInputs := []FriendInput{}
+	if err = cursor.All(context.TODO(), &friendInputs); err != nil {
+		return []users.User{}, err
+	}
+
+	result := []users.User{}
+	for _, friendInput := range friendInputs {
 
 		if exists, err := r.FriendExists(userID, friendInput.Sender); err != nil {
 			return []users.User{}, err
