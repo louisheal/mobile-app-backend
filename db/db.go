@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,8 +11,7 @@ import (
 )
 
 func NewMongoDatabase() *mongo.Database {
-	// pass := os.Getenv("dbPass")
-	pass := "QkF1nP80oexXViwX"
+	pass := os.Getenv("dbPass")
 	// TODO: String should be in .env (not raw in code)
 	uri := fmt.Sprintf("mongodb+srv://dbUser:%s@cluster0.iarktte.mongodb.net/?appName=Cluster0", pass)
 
